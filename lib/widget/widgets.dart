@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget appBarMain(BuildContext context) {
+AppBar appBarMain(BuildContext context) {
   return AppBar(
     centerTitle: true,
     title: Text('My Chat App'),

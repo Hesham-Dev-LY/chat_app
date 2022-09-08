@@ -27,13 +27,13 @@ class _SignUpState extends State<SignUp> {
   bool isLoading = false;
   // TODO SignUp Function
   signMeUp() async {
-    if (formKey.currentState.validate()) {
+    if (formKey.currentState?.validate() ?? false) {
       setState(() {
         isLoading = true;
       });
       await authMethods
-          .signUpWithEmailAndPassword(
-              emailEditingController.text, passwordEditingController.text)
+          .signUpWithEmailAndPassword(emailEditingController.text,
+              passwordEditingController.text, context)
           .then((result) {
         if (result != null) {
           Map<String, String> userDataMap = {
@@ -74,7 +74,8 @@ class _SignUpState extends State<SignUp> {
                         children: [
                           TextFormField(
                             validator: (val) {
-                              return val.isEmpty || val.length < 3
+                              return (val ?? '').isEmpty ||
+                                      (val?.length ?? 0) < 3
                                   ? 'Valid username required (Minimum 3 letters)'
                                   : null;
                             },
@@ -90,7 +91,7 @@ class _SignUpState extends State<SignUp> {
                             validator: (val) {
                               return RegExp(
                                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(val)
+                                      .hasMatch(val ?? '')
                                   ? null
                                   : "Valid email required";
                             },
@@ -104,7 +105,7 @@ class _SignUpState extends State<SignUp> {
                           SizedBox(height: 10.0),
                           TextFormField(
                             validator: (val) {
-                              return val.length < 6
+                              return (val?.length ?? 0) < 6
                                   ? 'Minimum 6 characters required'
                                   : null;
                             },

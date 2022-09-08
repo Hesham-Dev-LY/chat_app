@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
-  getUserByUserName(String username) {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(
+      String username) {
     return FirebaseFirestore.instance
         .collection('chatUsers')
         .where('name', isEqualTo: username)
@@ -9,7 +10,8 @@ class DatabaseMethods {
         .catchError((e) => print(e.toString()));
   }
 
-  getUserByUserEmail(String userEmail) {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserEmail(
+      String userEmail) {
     return FirebaseFirestore.instance
         .collection('chatUsers')
         .where('email', isEqualTo: userEmail)
@@ -18,22 +20,22 @@ class DatabaseMethods {
   }
 
   uploadUserInfo(userMap) async {
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('chatUsers')
         .add(userMap)
         .catchError((e) => print(e.toString()));
   }
 
-  createChatRoom(String chatRoomId, chatRoomMap) {
-    FirebaseFirestore.instance
+  Future<void> createChatRoom(String chatRoomId, chatRoomMap) async {
+    await FirebaseFirestore.instance
         .collection('ChatRoom')
         .doc(chatRoomId)
         .set(chatRoomMap)
         .catchError((e) => print(e.toString()));
   }
 
-  addConversationMessage(String chatRoomId, messageMap) {
-    FirebaseFirestore.instance
+  Future<void> addConversationMessage(String chatRoomId, messageMap) async {
+    await FirebaseFirestore.instance
         .collection("ChatRoom")
         .doc(chatRoomId)
         .collection("chats")
@@ -43,7 +45,8 @@ class DatabaseMethods {
     });
   }
 
-  getConversationMessage(String chatRoomId) async {
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getConversationMessage(
+      String chatRoomId) async {
     return FirebaseFirestore.instance
         .collection("ChatRoom")
         .doc(chatRoomId)
@@ -52,7 +55,8 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  getChatRoom(String itIsMyName) async {
+  Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getChatRoom(
+      String itIsMyName) async {
     return FirebaseFirestore.instance
         .collection("ChatRoom")
         .where('users', arrayContains: itIsMyName)

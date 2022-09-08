@@ -6,6 +6,7 @@ import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/conversationScreen.dart';
 import 'package:chat_app/views/search.dart';
 import 'package:chat_app/widget/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -17,23 +18,24 @@ class _ChatRoomState extends State<ChatRoom> {
   // -------------------------------------------------------------- //
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
-  Stream chatRoomStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? chatRoomStream;
+
   Widget chatRoomsList() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: chatRoomStream,
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
+                itemCount: snapshot.data?.docs.length ?? 0,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   return ChatRoomsTile(
-                    userName: snapshot.data.docs[index]
+                    userName: snapshot.data!.docs[index]
                         .data()['chatRoomId']
                         .toString()
                         .replaceAll("_", "")
                         .replaceAll(Constants.myName, ""),
-                    chatRoomId: snapshot.data.docs[index].data()["chatRoomId"],
+                    chatRoomId: snapshot.data!.docs[index].data()["chatRoomId"],
                   );
                 })
             : Container();
@@ -42,7 +44,8 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   getUserInfo() async {
-    Constants.myName = await HelperFunctions.getUserNameSharedPreference();
+    Constants.myName =
+        (await HelperFunctions.getUserNameSharedPreference()) ?? 'UNKNOWN';
     databaseMethods.getChatRoom(Constants.myName).then((snapshots) {
       setState(() {
         chatRoomStream = snapshots;
@@ -67,9 +70,9 @@ class _ChatRoomState extends State<ChatRoom> {
         title: Text('Chat Room'),
         actions: [
           GestureDetector(
-            onTap: () {
-              HelperFunctions.saveUserLoggedInSharedPreference(false);
-              authMethods.signOut();
+            onTap: () async {
+              await HelperFunctions.saveUserLoggedInSharedPreference(false);
+              await authMethods.signOut();
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => Authenticate()));
             },
@@ -83,11 +86,15 @@ class _ChatRoomState extends State<ChatRoom> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
         onPressed: () {
-          Navigator.pushReplacement(
+          Navigator.push(
               context, MaterialPageRoute(builder: (context) => SearchScreen()));
         },
       ),
-      body: chatRoomsList(),
+      body: chatRoomStream != null
+          ? chatRoomsList()
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }
@@ -96,7 +103,7 @@ class ChatRoomsTile extends StatelessWidget {
   final String userName;
   final String chatRoomId;
 
-  ChatRoomsTile({this.userName, @required this.chatRoomId});
+  ChatRoomsTile({required this.userName, required this.chatRoomId});
 
   @override
   Widget build(BuildContext context) {

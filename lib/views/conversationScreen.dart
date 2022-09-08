@@ -1,32 +1,40 @@
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/widget/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ConversationScreen extends StatefulWidget {
   final String chatRoomId;
-  ConversationScreen({this.chatRoomId});
+
+  ConversationScreen({required this.chatRoomId});
+
   @override
   _ConversationScreenState createState() => _ConversationScreenState();
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
   // -------------------------------------------------------------- //
-  Stream chatMessageStream;
+  Stream<QuerySnapshot<Map<String, dynamic>>>? chatMessageStream;
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController messageEditingController = new TextEditingController();
+
   Widget chatMessageList() {
-    return StreamBuilder(
+    if (chatMessageStream == null)
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: chatMessageStream,
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
+                itemCount: snapshot.data?.docs.length ?? 0,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                    message: snapshot.data.docs[index].data()["message"],
+                    message: snapshot.data!.docs[index].data()["message"],
                     sendByMe: Constants.myName ==
-                        snapshot.data.docs[index].data()["sendBy"],
+                        snapshot.data!.docs[index].data()["sendBy"],
                   );
                 })
             : Container();
@@ -123,7 +131,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
 class MessageTile extends StatelessWidget {
   final String message;
   final bool sendByMe;
-  MessageTile({@required this.message, @required this.sendByMe});
+
+  MessageTile({required this.message, required this.sendByMe});
 
   @override
   Widget build(BuildContext context) {

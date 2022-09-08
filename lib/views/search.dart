@@ -14,7 +14,7 @@ class _SearchScreenState extends State<SearchScreen> {
   // -------------------------------------------------------------- //
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController searchEditingController = new TextEditingController();
-  QuerySnapshot searchSnapshot;
+  QuerySnapshot<Map<String, dynamic>>? searchSnapshot;
   initiateSearch() {
     databaseMethods
         .getUserByUserName(searchEditingController.text)
@@ -28,14 +28,14 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget searchList() {
     return searchSnapshot != null
         ? ListView.builder(
-            itemCount: searchSnapshot.docs.length,
+            itemCount: searchSnapshot?.docs.length ??0,
             // when use "ListView" inside a "Column" then use "shrinkWrap"
             // to avoid error "vertical viewport was given unbounded height"
             shrinkWrap: true,
             itemBuilder: (context, index) {
               return userTile(
-                userName: searchSnapshot.docs[index].data()['name'],
-                userEmail: searchSnapshot.docs[index].data()['email'],
+                userName: searchSnapshot!.docs[index].data()['name'],
+                userEmail: searchSnapshot!.docs[index].data()['email'],
               );
             })
         : Container();
@@ -62,7 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  Widget userTile({String userName, String userEmail}) {
+  Widget userTile({required String userName,required String userEmail}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 16.0),
       child: Row(

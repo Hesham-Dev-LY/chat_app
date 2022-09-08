@@ -4,7 +4,6 @@ import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/chatRoomScreen.dart';
 import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -25,15 +24,15 @@ class _SignInState extends State<SignIn> {
   TextEditingController passwordEditingController = new TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
-  QuerySnapshot snapshotUserInfo;
+  QuerySnapshot<Map<String, dynamic>>? snapshotUserInfo;
   signMeIn() async {
-    if (formKey.currentState.validate()) {
+    if (formKey.currentState?.validate() ?? false) {
       setState(() {
         isLoading = true;
       });
       await authMethods
-          .signInWithEmailAndPassword(
-              emailEditingController.text, passwordEditingController.text)
+          .signInWithEmailAndPassword(emailEditingController.text,
+              passwordEditingController.text, context)
           .then((value) async {
         if (value != null) {
           databaseMethods
@@ -42,9 +41,9 @@ class _SignInState extends State<SignIn> {
             snapshotUserInfo = value;
             HelperFunctions.saveUserLoggedInSharedPreference(true);
             HelperFunctions.saveUserNameSharedPreference(
-                snapshotUserInfo.docs[0].data()['name']);
+                snapshotUserInfo!.docs[0].data()['name']);
             HelperFunctions.saveUserEmailSharedPreference(
-                snapshotUserInfo.docs[0].data()['email']);
+                snapshotUserInfo!.docs[0].data()['email']);
           });
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => ChatRoom()));
@@ -70,9 +69,9 @@ class _SignInState extends State<SignIn> {
             await DatabaseMethods().getUserByUserEmail(authMethods.email);
         HelperFunctions.saveUserLoggedInSharedPreference(true);
         HelperFunctions.saveUserNameSharedPreference(
-            snapshotUserInfo.docs[0].data()["googleUserName"]);
+            snapshotUserInfo!.docs[0].data()["googleUserName"]);
         HelperFunctions.saveUserEmailSharedPreference(
-            snapshotUserInfo.docs[0].data()["googleUserEmail"]);
+            snapshotUserInfo!.docs[0].data()["googleUserEmail"]);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ChatRoom()));
       } else {
@@ -108,7 +107,7 @@ class _SignInState extends State<SignIn> {
                             validator: (val) {
                               return RegExp(
                                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(val)
+                                      .hasMatch(val ?? '')
                                   ? null
                                   : "Valid email required";
                             },
@@ -122,7 +121,7 @@ class _SignInState extends State<SignIn> {
                           SizedBox(height: 10.0),
                           TextFormField(
                             validator: (val) {
-                              return val.length < 6
+                              return (val?.length ?? 0) < 6
                                   ? 'Minimum 6 characters required'
                                   : null;
                             },

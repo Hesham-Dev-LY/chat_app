@@ -1,4 +1,4 @@
 class UserOfFirebase {
   String userId;
-  UserOfFirebase({this.userId});
+  UserOfFirebase({required this.userId});
 }
