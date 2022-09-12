@@ -2,18 +2,20 @@ import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/chatRoomScreen.dart';
+import 'package:chat_app/views/home_screen.dart';
 import 'package:chat_app/widget/widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
   // -------------------------------------------------------------- //
-  final Function toggle;
-  // "SignUp()" constructor
-  SignUp(this.toggle);
+
   // -------------------------------------------------------------- //
   @override
   _SignUpState createState() => _SignUpState();
+
+  SignUp();
 }
 
 class _SignUpState extends State<SignUp> {
@@ -25,6 +27,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController passwordEditingController = new TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
+
   // TODO SignUp Function
   signMeUp() async {
     if (formKey.currentState?.validate() ?? false) {
@@ -40,6 +43,8 @@ class _SignUpState extends State<SignUp> {
             "name": userNameEditingController.text,
             "email": emailEditingController.text
           };
+          FirebaseAuth.instance.currentUser!
+              .updateDisplayName(userNameEditingController.text);
           databaseMethods.uploadUserInfo(userDataMap);
           HelperFunctions.saveUserLoggedInSharedPreference(true);
           HelperFunctions.saveUserNameSharedPreference(
@@ -47,11 +52,12 @@ class _SignUpState extends State<SignUp> {
           HelperFunctions.saveUserEmailSharedPreference(
               emailEditingController.text);
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ChatRoom()));
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
         }
       });
     }
   }
+
   // -------------------------------------------------------------- //
 
   @override
@@ -61,9 +67,9 @@ class _SignUpState extends State<SignUp> {
       body: isLoading
           ? Container(child: Center(child: CircularProgressIndicator()))
           : SingleChildScrollView(
+              padding: EdgeInsets.only(top: 60),
               child: Container(
-                height: MediaQuery.of(context).size.height - 50,
-                alignment: Alignment.bottomCenter,
+                alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 25.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -80,10 +86,12 @@ class _SignUpState extends State<SignUp> {
                                   : null;
                             },
                             controller: userNameEditingController,
-                            style: simpleTextStyle(),
+                            style: simpleTextStyle(color: Colors.blue),
                             decoration: textFieldInputDecoration(
                               'Username',
-                              Icon(Icons.account_circle, color: Colors.white54),
+                              Icon(
+                                Icons.account_circle,
+                              ),
                             ),
                           ),
                           SizedBox(height: 10.0),
@@ -96,10 +104,12 @@ class _SignUpState extends State<SignUp> {
                                   : "Valid email required";
                             },
                             controller: emailEditingController,
-                            style: simpleTextStyle(),
+                            style: simpleTextStyle(color: Colors.blue),
                             decoration: textFieldInputDecoration(
                               'Email',
-                              Icon(Icons.email_outlined, color: Colors.white54),
+                              Icon(
+                                Icons.email_outlined,
+                              ),
                             ),
                           ),
                           SizedBox(height: 10.0),
@@ -110,23 +120,17 @@ class _SignUpState extends State<SignUp> {
                                   : null;
                             },
                             controller: passwordEditingController,
-                            style: simpleTextStyle(),
+                            style: simpleTextStyle(color: Colors.blue),
                             obscureText: true,
                             decoration: textFieldInputDecoration(
                               'Password',
-                              Icon(Icons.vpn_key, color: Colors.white54),
+                              Icon(
+                                Icons.vpn_key,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child:
-                          Text('Forgot Password ?', style: simpleTextStyle()),
                     ),
                     SizedBox(height: 16.0),
                     GestureDetector(
@@ -140,7 +144,7 @@ class _SignUpState extends State<SignUp> {
                         child: Text('Sign Up', style: simpleTextStyle()),
                         decoration: BoxDecoration(
                           // Border
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(10.0),
                           // Gradient
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
@@ -164,7 +168,8 @@ class _SignUpState extends State<SignUp> {
                       ),
                       decoration: BoxDecoration(
                         // Border
-                        borderRadius: BorderRadius.circular(30.0),
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(10.0),
                         color: Colors.white,
                       ),
                     ),
@@ -176,7 +181,7 @@ class _SignUpState extends State<SignUp> {
                             style: simpleTextStyle()),
                         GestureDetector(
                           onTap: () {
-                            widget.toggle();
+                            Navigator.pop(context);
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8.0),

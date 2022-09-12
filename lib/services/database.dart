@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseMethods {
   Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(
@@ -53,6 +54,15 @@ class DatabaseMethods {
         .collection("chats")
         .orderBy('time')
         .snapshots();
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getPosts(
+      {int limit = 100}) async {
+    return FirebaseFirestore.instance
+        .collection("posts")
+        .orderBy('date', descending: true)
+        .limit(limit)
+        .get();
   }
 
   Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getChatRoom(

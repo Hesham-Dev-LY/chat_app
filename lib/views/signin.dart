@@ -2,15 +2,16 @@ import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/chatRoomScreen.dart';
+import 'package:chat_app/views/home_screen.dart';
+import 'package:chat_app/views/signup.dart';
 import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
   // -------------------------------------------------------------- //
-  final Function toggle;
   // "SignIn()" constructor
-  SignIn(this.toggle);
+
   // -------------------------------------------------------------- //
   @override
   _SignInState createState() => _SignInState();
@@ -30,25 +31,32 @@ class _SignInState extends State<SignIn> {
       setState(() {
         isLoading = true;
       });
-      await authMethods
-          .signInWithEmailAndPassword(emailEditingController.text,
-              passwordEditingController.text, context)
-          .then((value) async {
-        if (value != null) {
-          databaseMethods
-              .getUserByUserEmail(emailEditingController.text)
-              .then((value) {
-            snapshotUserInfo = value;
-            HelperFunctions.saveUserLoggedInSharedPreference(true);
-            HelperFunctions.saveUserNameSharedPreference(
-                snapshotUserInfo!.docs[0].data()['name']);
-            HelperFunctions.saveUserEmailSharedPreference(
-                snapshotUserInfo!.docs[0].data()['email']);
-          });
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ChatRoom()));
-        }
-      });
+      try {
+        await authMethods
+            .signInWithEmailAndPassword(emailEditingController.text,
+                passwordEditingController.text, context)
+            .then((value) async {
+          if (value != null) {
+            databaseMethods
+                .getUserByUserEmail(emailEditingController.text)
+                .then((value) {
+              snapshotUserInfo = value;
+              HelperFunctions.saveUserLoggedInSharedPreference(true);
+              HelperFunctions.saveUserNameSharedPreference(
+                  snapshotUserInfo!.docs[0].data()['name']);
+              HelperFunctions.saveUserEmailSharedPreference(
+                  snapshotUserInfo!.docs[0].data()['email']);
+            });
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          }
+        });
+      } catch (ex) {
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -56,6 +64,7 @@ class _SignInState extends State<SignIn> {
     setState(() {
       isLoading = true;
     });
+
     authMethods.signInWithGoogle().then((result) async {
       print(authMethods.name);
       print(authMethods.email);
@@ -81,6 +90,9 @@ class _SignInState extends State<SignIn> {
       }
     }).catchError((e) {
       print(e);
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -88,16 +100,19 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: AppBar(
+        title: Text('Login'),
+        centerTitle: true,
+      ),
       body: isLoading
           ? Container(child: Center(child: CircularProgressIndicator()))
           : SingleChildScrollView(
+              padding: EdgeInsets.only(top: 60),
               child: Container(
-                height: MediaQuery.of(context).size.height - 50,
-                alignment: Alignment.bottomCenter,
+                alignment: Alignment.center,
                 padding: EdgeInsets.symmetric(horizontal: 25.0),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Form(
                       key: formKey,
@@ -112,10 +127,10 @@ class _SignInState extends State<SignIn> {
                                   : "Valid email required";
                             },
                             controller: emailEditingController,
-                            style: simpleTextStyle(),
+                            style: simpleTextStyle(color: Colors.blue),
                             decoration: textFieldInputDecoration(
                               'Email',
-                              Icon(Icons.email_outlined, color: Colors.white54),
+                              Icon(Icons.email_outlined),
                             ),
                           ),
                           SizedBox(height: 10.0),
@@ -126,24 +141,24 @@ class _SignInState extends State<SignIn> {
                                   : null;
                             },
                             controller: passwordEditingController,
-                            style: simpleTextStyle(),
+                            style: simpleTextStyle(color: Colors.blue),
                             obscureText: true,
                             decoration: textFieldInputDecoration(
                               'Password',
-                              Icon(Icons.vpn_key, color: Colors.white54),
+                              Icon(Icons.vpn_key),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 8.0),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      child:
-                          Text('Forgot Password ?', style: simpleTextStyle()),
-                    ),
+                    // SizedBox(height: 8.0),
+                    // Container(
+                    //   alignment: Alignment.centerRight,
+                    //   padding:
+                    //       EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    //   child:
+                    //       Text('Forgot Password ?', style: simpleTextStyle()),
+                    // ),
                     SizedBox(height: 16.0),
                     GestureDetector(
                       onTap: () {
@@ -156,7 +171,7 @@ class _SignInState extends State<SignIn> {
                         child: Text('Sign In', style: simpleTextStyle()),
                         decoration: BoxDecoration(
                           // Border
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(10.0),
                           // Gradient
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
@@ -185,7 +200,8 @@ class _SignInState extends State<SignIn> {
                         ),
                         decoration: BoxDecoration(
                           // Border
-                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(color: Colors.blue),
+                          borderRadius: BorderRadius.circular(10.0),
                           color: Colors.white,
                         ),
                       ),
@@ -194,24 +210,28 @@ class _SignInState extends State<SignIn> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Don\'t have an account ? ',
-                            style: simpleTextStyle()),
                         GestureDetector(
                           onTap: () {
-                            widget.toggle();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignUp(),
+                                ));
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              'Register Now',
+                              ' Register Now ',
                               style: TextStyle(
                                 fontSize: 16.0,
-                                color: Colors.white,
+                                color: Colors.grey,
                                 decoration: TextDecoration.underline,
                               ),
                             ),
                           ),
-                        )
+                        ),
+                        Text('? Don\'t have an account ',
+                            style: simpleTextStyle(color: Colors.grey)),
                       ],
                     ),
                     SizedBox(height: 50.0),
