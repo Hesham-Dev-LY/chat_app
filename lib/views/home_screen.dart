@@ -4,6 +4,7 @@ import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/add_post_screen.dart';
 import 'package:chat_app/views/chatRoomScreen.dart';
 import 'package:chat_app/views/signin.dart';
+import 'package:chat_app/views/view_comments.dart';
 import 'package:chat_app/widget/full_image.dart';
 import 'package:chat_app/widget/post_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,40 +26,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text('Chat App'),
         actions: [
-          GestureDetector(
-            onTap: () async {
-              await HelperFunctions.saveUserLoggedInSharedPreference(false);
-              await AuthMethods().signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => SignIn()));
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Icon(Icons.exit_to_app),
-            ),
-          ),
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatRoom(),
-                    ));
-              },
-              icon: Icon(
-                Icons.chat_bubble,
-                color: Colors.white,
-              )),
-          IconButton(
-              onPressed: () {
-                setState(() {});
-              },
-              icon: Icon(
-                Icons.refresh,
-                color: Colors.white,
-              )),
+          // GestureDetector(
+          //   onTap: () async {
+          //     await HelperFunctions.saveUserLoggedInSharedPreference(false);
+          //     await AuthMethods().signOut();
+          //     Navigator.pushReplacement(
+          //         context, MaterialPageRoute(builder: (context) => SignIn()));
+          //   },
+          //   child: Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 16.0),
+          //     child: Icon(Icons.exit_to_app),
+          //   ),
+          // ),
+          // IconButton(
+          //     onPressed: () {
+          //       Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder: (context) => ChatRoom(),
+          //           ));
+          //     },
+          //     icon: Icon(
+          //       Icons.chat_bubble,
+          //       color: Colors.white,
+          //     )),
+          // IconButton(
+          //     onPressed: () {
+          //       setState(() {});
+          //     },
+          //     icon: Icon(
+          //       Icons.refresh,
+          //       color: Colors.white,
+          //     )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -96,7 +98,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Padding(
                   padding:
                       const EdgeInsets.only(top: 16.0, left: 16, right: 16),
-                  child: PostItem(model: posts.elementAt(index)),
+                  child: PostItem(
+                      model: posts.elementAt(index),
+                      onCommentClick: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewComments(
+                                postId: posts.elementAt(index).postId!,
+                              ),
+                            )).then((value) {
+                          if (mounted) setState(() {});
+                        });
+                      }),
                 );
               });
         },

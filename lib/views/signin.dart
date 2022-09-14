@@ -8,6 +8,8 @@ import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'core_screen.dart';
+
 class SignIn extends StatefulWidget {
   // -------------------------------------------------------------- //
   // "SignIn()" constructor
@@ -48,7 +50,7 @@ class _SignInState extends State<SignIn> {
                   snapshotUserInfo!.docs[0].data()['email']);
             });
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                context, MaterialPageRoute(builder: (context) => CoreScreen()));
           }
         });
       } catch (ex) {

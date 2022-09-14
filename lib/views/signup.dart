@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'core_screen.dart';
+
 class SignUp extends StatefulWidget {
   // -------------------------------------------------------------- //
 
@@ -52,7 +54,7 @@ class _SignUpState extends State<SignUp> {
           HelperFunctions.saveUserEmailSharedPreference(
               emailEditingController.text);
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+              context, MaterialPageRoute(builder: (context) => CoreScreen()));
         }
       });
     }

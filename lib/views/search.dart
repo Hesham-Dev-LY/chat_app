@@ -11,24 +11,45 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  bool isLoading = false;
+
   // -------------------------------------------------------------- //
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController searchEditingController = new TextEditingController();
   QuerySnapshot<Map<String, dynamic>>? searchSnapshot;
+
   initiateSearch() {
-    databaseMethods
-        .getUserByUserName(searchEditingController.text)
-        .then((value) {
+    try {
       setState(() {
-        searchSnapshot = value;
+        isLoading = true;
       });
-    });
+      databaseMethods
+          .getUserByUserName(searchEditingController.text)
+          .then((value) {
+        setState(() {
+          isLoading = false;
+          searchSnapshot = value;
+        });
+      });
+    } catch (ex) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Widget searchList() {
+    if (isLoading)
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+            child: CircularProgressIndicator(
+          color: Colors.blue,
+        )),
+      );
     return searchSnapshot != null
         ? ListView.builder(
-            itemCount: searchSnapshot?.docs.length ??0,
+            itemCount: searchSnapshot?.docs.length ?? 0,
             // when use "ListView" inside a "Column" then use "shrinkWrap"
             // to avoid error "vertical viewport was given unbounded height"
             shrinkWrap: true,
@@ -62,7 +83,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  Widget userTile({required String userName,required String userEmail}) {
+  Widget userTile({required String userName, required String userEmail}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 16.0),
       child: Row(
@@ -70,8 +91,8 @@ class _SearchScreenState extends State<SearchScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userName, style: simpleTextStyle()),
-              Text(userEmail, style: simpleTextStyle()),
+              Text(userName, style: simpleTextStyle(color: Colors.black)),
+              Text(userEmail, style: simpleTextStyle(color: Colors.grey)),
             ],
           ),
           Spacer(),
@@ -82,9 +103,20 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Container(
               decoration: BoxDecoration(
                   color: Colors.blue,
-                  borderRadius: BorderRadius.circular(30.0)),
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              child: Text('Message', style: simpleTextStyle()),
+                  borderRadius: BorderRadius.circular(50.0)),
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  Text('Message', style: simpleTextStyle()),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Icon(
+                    Icons.send,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
             ),
           )
         ],
@@ -115,7 +147,7 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           children: [
             Container(
-              color: Color(0x54FFFFFF),
+              color: Color(0xFF32A2FF),
               padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 16.0),
               child: Row(
                 children: [
@@ -127,7 +159,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         border: InputBorder.none,
                         hintText: 'Search Username...',
                         hintStyle: TextStyle(color: Colors.white54),
-                        prefixIcon: Icon(Icons.search),
                       ),
                     ),
                   ),

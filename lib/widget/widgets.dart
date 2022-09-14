@@ -29,9 +29,9 @@ TextStyle simpleTextStyle({Color color = Colors.white}) {
   return TextStyle(fontSize: 16.0, color: color);
 }
 
-TextStyle chatRoomTileStyle() {
+TextStyle chatRoomTileStyle(color) {
   return TextStyle(
-    color: Colors.white,
+    color: color ?? Colors.white,
     fontSize: 16,
     fontFamily: 'OverpassRegular',
     fontWeight: FontWeight.w300,

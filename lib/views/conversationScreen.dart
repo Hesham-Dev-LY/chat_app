@@ -79,7 +79,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 alignment: Alignment.bottomCenter,
                 width: MediaQuery.of(context).size.width,
                 child: Container(
-                  color: Color(0x54FFFFFF),
+                  color: Color(0xFF32A2FF),
                   padding:
                       EdgeInsets.symmetric(horizontal: 25.0, vertical: 16.0),
                   child: Row(
@@ -156,11 +156,11 @@ class MessageTile extends StatelessWidget {
                     bottomRight: Radius.circular(23)),
             gradient: LinearGradient(
               colors: sendByMe
-                  ? [const Color(0xff007EF4), const Color(0xff2A75BC)]
-                  : [const Color(0x1AFFFFFF), const Color(0x1AFFFFFF)],
+                  ? [const Color(0xff32a2ff), const Color(0xff115696)]
+                  : [Colors.black, Colors.black54],
             )),
         child: Text(message,
-            textAlign: TextAlign.start, style: chatRoomTileStyle()),
+            textAlign: TextAlign.start, style: chatRoomTileStyle(Colors.white)),
       ),
     );
   }

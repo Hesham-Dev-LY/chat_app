@@ -8,8 +8,10 @@ import '../helper/helperFunctions.dart';
 import 'full_image.dart';
 
 class PostItem extends StatefulWidget {
-  const PostItem({required this.model, Key? key}) : super(key: key);
+  const PostItem({required this.model, Key? key, required this.onCommentClick})
+      : super(key: key);
   final PostModel model;
+  final Function() onCommentClick;
 
   @override
   State<PostItem> createState() => _PostItemState();
@@ -128,15 +130,7 @@ class _PostItemState extends State<PostItem> {
                           backgroundColor: Colors.transparent,
                           textColor: Colors.blueGrey,
                           onClick: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ViewComments(
-                                    postId: widget.model.postId!,
-                                  ),
-                                )).then((value) {
-                              if (mounted) setState(() {});
-                            });
+                            widget.onCommentClick();
                           },
                           icon: Icons.chat_outlined),
                     ),
@@ -149,7 +143,9 @@ class _PostItemState extends State<PostItem> {
                       height: 35.0,
                       child: Center(
                         child: defaultButton(
-                            label: 'اعجاب',
+                            label: widget.model.isLiked
+                                ? 'إلغاء الإعجاب'
+                                : 'اعجاب',
                             smalSize: true,
                             radius: 5,
                             backgroundColor: Colors.transparent,

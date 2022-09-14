@@ -1,5 +1,6 @@
 import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/views/chatRoomScreen.dart';
+import 'package:chat_app/views/core_screen.dart';
 import 'package:chat_app/views/home_screen.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -69,7 +70,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               )
             : (userIsLoggedIn!)
-                ? HomeScreen()
+                ? CoreScreen()
                 : SignIn());
   }
 }

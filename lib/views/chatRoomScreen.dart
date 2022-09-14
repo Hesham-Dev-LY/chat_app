@@ -28,6 +28,8 @@ class _ChatRoomState extends State<ChatRoom> {
             ? ListView.builder(
                 itemCount: snapshot.data?.docs.length ?? 0,
                 shrinkWrap: true,
+                padding: EdgeInsets.only(
+                    top: 16.0, left: 16.0, bottom: 100, right: 16.0),
                 itemBuilder: (context, index) {
                   return ChatRoomsTile(
                     userName: snapshot.data!.docs[index]
@@ -69,18 +71,18 @@ class _ChatRoomState extends State<ChatRoom> {
         centerTitle: true,
         title: Text('Chat Room'),
         actions: [
-          GestureDetector(
-            onTap: () async {
-              await HelperFunctions.saveUserLoggedInSharedPreference(false);
-              await authMethods.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => SignIn()));
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Icon(Icons.exit_to_app),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () async {
+          //     await HelperFunctions.saveUserLoggedInSharedPreference(false);
+          //     await authMethods.signOut();
+          //     Navigator.pushReplacement(
+          //         context, MaterialPageRoute(builder: (context) => SignIn()));
+          //   },
+          //   child: Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 16.0),
+          //     child: Icon(Icons.exit_to_app),
+          //   ),
+          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -117,7 +119,9 @@ class ChatRoomsTile extends StatelessWidget {
                     )));
       },
       child: Container(
-        color: Colors.black26,
+        decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(30)),
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Row(
           children: [
@@ -128,11 +132,16 @@ class ChatRoomsTile extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(30)),
               child: Text('${userName.substring(0, 1).toUpperCase()}',
-                  textAlign: TextAlign.center, style: chatRoomTileStyle()),
+                  textAlign: TextAlign.center,
+                  style: chatRoomTileStyle(Colors.white)),
             ),
             SizedBox(width: 12),
             Text(userName,
-                textAlign: TextAlign.start, style: chatRoomTileStyle())
+                textAlign: TextAlign.start,
+                style: chatRoomTileStyle(Colors.black)
+                    .copyWith(fontSize: 16.0, fontWeight: FontWeight.w600)),
+            Spacer(),
+            Icon(Icons.arrow_forward_ios_rounded),
           ],
         ),
       ),
