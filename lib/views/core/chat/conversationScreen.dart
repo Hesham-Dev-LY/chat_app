@@ -90,7 +90,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           style: simpleTextStyle(),
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Message...',
+                              hintText: 'الرسالة ....',
                               hintStyle: TextStyle(color: Colors.white54)),
                         ),
                       ),

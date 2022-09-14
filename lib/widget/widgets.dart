@@ -26,14 +26,18 @@ InputDecoration textFieldInputDecoration(String labelText, Icon iconType) {
 }
 
 TextStyle simpleTextStyle({Color color = Colors.white}) {
-  return TextStyle(fontSize: 16.0, color: color);
+  return TextStyle(
+    fontSize: 16.0,
+    color: color,
+    fontFamily: 'JF Flat Regular',
+  );
 }
 
 TextStyle chatRoomTileStyle(color) {
   return TextStyle(
     color: color ?? Colors.white,
     fontSize: 16,
-    fontFamily: 'OverpassRegular',
+    fontFamily: 'JF Flat Regular',
     fontWeight: FontWeight.w300,
   );
 }

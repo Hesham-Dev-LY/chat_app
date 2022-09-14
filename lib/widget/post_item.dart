@@ -1,6 +1,7 @@
 import 'package:chat_app/model/post_model.dart';
-import 'package:chat_app/views/view_comments.dart';
+import 'package:chat_app/views/core/home/view_comments.dart';
 import 'package:chat_app/widget/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -8,10 +9,17 @@ import '../helper/helperFunctions.dart';
 import 'full_image.dart';
 
 class PostItem extends StatefulWidget {
-  const PostItem({required this.model, Key? key, required this.onCommentClick})
+  const PostItem(
+      {required this.model,
+      Key? key,
+      this.onPostDeleted,
+      required this.onCommentClick,
+      required this.owner})
       : super(key: key);
   final PostModel model;
+  final bool owner;
   final Function() onCommentClick;
+  final Function()? onPostDeleted;
 
   @override
   State<PostItem> createState() => _PostItemState();
@@ -118,59 +126,90 @@ class _PostItemState extends State<PostItem> {
               ),
               Container(
                 color: Colors.grey.shade200,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      height: 35.0,
-                      child: defaultButton(
-                          label: 'التعليق',
-                          smalSize: true,
-                          radius: 5,
-                          backgroundColor: Colors.transparent,
-                          textColor: Colors.blueGrey,
-                          onClick: () {
-                            widget.onCommentClick();
-                          },
-                          icon: Icons.chat_outlined),
-                    ),
-                    Container(
-                      color: Colors.white,
-                      width: 1.0,
-                      height: 20,
-                    ),
-                    Container(
-                      height: 35.0,
-                      child: Center(
+                child: Builder(builder: (context) {
+                  if (widget.owner) {
+                    return Center(
+                      child: Container(
+                        height: 35.0,
                         child: defaultButton(
-                            label: widget.model.isLiked
-                                ? 'إلغاء الإعجاب'
-                                : 'اعجاب',
+                            label: 'حذف',
+                            smalSize: true,
+                            radius: 5,
+                            backgroundColor: Colors.transparent,
+                            textColor: Colors.red,
+                            onClick: () async {
+                              try {
+                                showToast('جاري الحذف');
+                                await FirebaseFirestore.instance
+                                    .collection('posts')
+                                    .doc(widget.model.postId!)
+                                    .delete();
+                                if ((widget.onPostDeleted) != null) {
+                                  widget.onPostDeleted!();
+                                }
+                                showToast('تم الحذف');
+                              } catch (ex) {
+                                showToast('فشل الحذف');
+                              }
+                            },
+                            icon: Icons.delete_forever),
+                      ),
+                    );
+                  }
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
+                        height: 35.0,
+                        child: defaultButton(
+                            label: 'التعليق',
                             smalSize: true,
                             radius: 5,
                             backgroundColor: Colors.transparent,
                             textColor: Colors.blueGrey,
                             onClick: () {
-                              like(
-                                  postId: widget.model.postId!,
-                                  like: !widget.model.isLiked);
-                              setState(() {
-                                widget.model.isLiked = !widget.model.isLiked;
-                                if (!widget.model.isLiked)
-                                  widget.model.likes.remove(
-                                      '${FirebaseAuth.instance.currentUser!.uid}');
-                                else
-                                  widget.model.likes.add(
-                                      '${FirebaseAuth.instance.currentUser!.uid}');
-                              });
+                              widget.onCommentClick();
                             },
-                            icon: widget.model.isLiked
-                                ? Icons.thumb_up_alt_rounded
-                                : Icons.thumb_up_off_alt),
+                            icon: Icons.chat_outlined),
                       ),
-                    ),
-                  ],
-                ),
+                      Container(
+                        color: Colors.white,
+                        width: 1.0,
+                        height: 20,
+                      ),
+                      Container(
+                        height: 35.0,
+                        child: Center(
+                          child: defaultButton(
+                              label: widget.model.isLiked
+                                  ? 'إلغاء الإعجاب'
+                                  : 'اعجاب',
+                              smalSize: true,
+                              radius: 5,
+                              backgroundColor: Colors.transparent,
+                              textColor: Colors.blueGrey,
+                              onClick: () {
+                                like(
+                                    postId: widget.model.postId!,
+                                    like: !widget.model.isLiked);
+                                setState(() {
+                                  widget.model.isLiked = !widget.model.isLiked;
+                                  if (!widget.model.isLiked)
+                                    widget.model.likes.remove(
+                                        '${FirebaseAuth.instance.currentUser!.uid}');
+                                  else
+                                    widget.model.likes.add(
+                                        '${FirebaseAuth.instance.currentUser!.uid}');
+                                });
+                              },
+                              icon: widget.model.isLiked
+                                  ? Icons.thumb_up_alt_rounded
+                                  : Icons.thumb_up_off_alt),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
             ],
           ),

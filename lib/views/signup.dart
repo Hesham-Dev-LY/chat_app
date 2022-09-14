@@ -1,14 +1,14 @@
 import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/chatRoomScreen.dart';
-import 'package:chat_app/views/home_screen.dart';
+import 'package:chat_app/views/core/home/home_screen.dart';
 import 'package:chat_app/widget/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'core_screen.dart';
+import 'core/core_screen.dart';
 
 class SignUp extends StatefulWidget {
   // -------------------------------------------------------------- //
@@ -41,9 +41,10 @@ class _SignUpState extends State<SignUp> {
               passwordEditingController.text, context)
           .then((result) {
         if (result != null) {
-          Map<String, String> userDataMap = {
+          Map<String, dynamic> userDataMap = {
             "name": userNameEditingController.text,
-            "email": emailEditingController.text
+            "email": emailEditingController.text,
+            'catetedAt': FieldValue.serverTimestamp(),
           };
           FirebaseAuth.instance.currentUser!
               .updateDisplayName(userNameEditingController.text);
@@ -84,13 +85,13 @@ class _SignUpState extends State<SignUp> {
                             validator: (val) {
                               return (val ?? '').isEmpty ||
                                       (val?.length ?? 0) < 3
-                                  ? 'Valid username required (Minimum 3 letters)'
+                                  ? 'اسم المستخدم مطلوب'
                                   : null;
                             },
                             controller: userNameEditingController,
                             style: simpleTextStyle(color: Colors.blue),
                             decoration: textFieldInputDecoration(
-                              'Username',
+                              'اسم المستخدم',
                               Icon(
                                 Icons.account_circle,
                               ),
@@ -103,12 +104,12 @@ class _SignUpState extends State<SignUp> {
                                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                       .hasMatch(val ?? '')
                                   ? null
-                                  : "Valid email required";
+                                  : "الرجاء التأكد من البريد الإلكتروني";
                             },
                             controller: emailEditingController,
                             style: simpleTextStyle(color: Colors.blue),
                             decoration: textFieldInputDecoration(
-                              'Email',
+                              'البريد الإلكتروني',
                               Icon(
                                 Icons.email_outlined,
                               ),
@@ -118,14 +119,14 @@ class _SignUpState extends State<SignUp> {
                           TextFormField(
                             validator: (val) {
                               return (val?.length ?? 0) < 6
-                                  ? 'Minimum 6 characters required'
+                                  ? 'مطلوب 6 خانات على الأقل'
                                   : null;
                             },
                             controller: passwordEditingController,
                             style: simpleTextStyle(color: Colors.blue),
                             obscureText: true,
                             decoration: textFieldInputDecoration(
-                              'Password',
+                              'كلمة المرور',
                               Icon(
                                 Icons.vpn_key,
                               ),
@@ -143,7 +144,7 @@ class _SignUpState extends State<SignUp> {
                         alignment: Alignment.center,
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(vertical: 20.0),
-                        child: Text('Sign Up', style: simpleTextStyle()),
+                        child: Text('انشاء حساب', style: simpleTextStyle()),
                         decoration: BoxDecoration(
                           // Border
                           borderRadius: BorderRadius.circular(10.0),
@@ -165,7 +166,7 @@ class _SignUpState extends State<SignUp> {
                       width: MediaQuery.of(context).size.width,
                       padding: EdgeInsets.symmetric(vertical: 20.0),
                       child: Text(
-                        'Sign Up with Google',
+                        'التسجيل بواسطة Google',
                         style: TextStyle(color: Colors.black87, fontSize: 16.0),
                       ),
                       decoration: BoxDecoration(
@@ -179,8 +180,7 @@ class _SignUpState extends State<SignUp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Already have an account ? ',
-                            style: simpleTextStyle()),
+                        Text('لديك حساب بالفعل ؟', style: simpleTextStyle()),
                         GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
@@ -188,7 +188,7 @@ class _SignUpState extends State<SignUp> {
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              'SignIn Now',
+                              ' سجل الدخول',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.white,

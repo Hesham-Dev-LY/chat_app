@@ -1,6 +1,6 @@
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/conversationScreen.dart';
+import 'package:chat_app/views/core/chat/conversationScreen.dart';
 import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
-                  Text('Message', style: simpleTextStyle()),
+                  Text('مراسلة', style: simpleTextStyle()),
                   SizedBox(
                     width: 5,
                   ),
@@ -157,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       style: simpleTextStyle(),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Search Username...',
+                        hintText: 'البحث ...',
                         hintStyle: TextStyle(color: Colors.white54),
                       ),
                     ),

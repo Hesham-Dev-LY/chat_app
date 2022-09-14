@@ -33,7 +33,7 @@ class _ViewCommentsState extends State<ViewComments> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comments'),
+        title: Text('التعليقات'),
         centerTitle: true,
       ),
       body: Column(
@@ -48,7 +48,8 @@ class _ViewCommentsState extends State<ViewComments> {
                 );
               }
               if (snapshot.hasError) {
-                return Text('ERROR');
+                return Text(
+                    'الرجاء التحقق من اتصالك بالإنترنت وإعادة المحاولة');
               }
               if (comments.isEmpty)
                 comments = snapshot.data!.docs
@@ -56,14 +57,14 @@ class _ViewCommentsState extends State<ViewComments> {
                     .toList();
               if (comments.isEmpty) {
                 return Center(
-                  child: Text('NO COMMENTS'),
+                  child: Text('لا توجد تعليقات بعد'),
                 );
               }
 
               return ListView.separated(
                   itemBuilder: (context, index) => ListTile(
                         title: Text(
-                          comments.elementAt(index).userName ?? 'Unknown',
+                          comments.elementAt(index).userName ?? 'مستخدم شاتي',
                         ),
                         subtitle: Text(comments.elementAt(index).body ?? ''),
                         trailing: Text(

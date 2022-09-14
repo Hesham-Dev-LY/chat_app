@@ -1,14 +1,13 @@
 import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/chatRoomScreen.dart';
-import 'package:chat_app/views/home_screen.dart';
+import 'package:chat_app/views/core/home/home_screen.dart';
 import 'package:chat_app/views/signup.dart';
 import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'core_screen.dart';
+import 'core/core_screen.dart';
 
 class SignIn extends StatefulWidget {
   // -------------------------------------------------------------- //
@@ -70,21 +69,22 @@ class _SignInState extends State<SignIn> {
     authMethods.signInWithGoogle().then((result) async {
       print(authMethods.name);
       print(authMethods.email);
+      print('DATA : ${authMethods}');
       if (result != null) {
         Map<String, String> googleData = {
           'googleUserName': authMethods.name,
           'googleUserEmail': authMethods.email
         };
         await DatabaseMethods().uploadUserInfo(googleData);
-        snapshotUserInfo =
-            await DatabaseMethods().getUserByUserEmail(authMethods.email);
-        HelperFunctions.saveUserLoggedInSharedPreference(true);
-        HelperFunctions.saveUserNameSharedPreference(
-            snapshotUserInfo!.docs[0].data()["googleUserName"]);
-        HelperFunctions.saveUserEmailSharedPreference(
-            snapshotUserInfo!.docs[0].data()["googleUserEmail"]);
+        // snapshotUserInfo =
+        //     await DatabaseMethods().getUserByUserEmail(authMethods.email);
+        // HelperFunctions.saveUserLoggedInSharedPreference(true);
+        HelperFunctions.saveUserNameSharedPreference(authMethods.name);
+        // HelperFunctions.saveUserNameSharedPreference(
+        //     snapshotUserInfo!.docs[0].data()["googleUserName"]);
+        HelperFunctions.saveUserEmailSharedPreference(authMethods.email);
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => ChatRoom()));
+            context, MaterialPageRoute(builder: (context) => CoreScreen()));
       } else {
         setState(() {
           isLoading = false;
@@ -103,7 +103,7 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('تسجيل الدخول'),
         centerTitle: true,
       ),
       body: isLoading
@@ -126,12 +126,12 @@ class _SignInState extends State<SignIn> {
                                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                       .hasMatch(val ?? '')
                                   ? null
-                                  : "Valid email required";
+                                  : "البريد الإلكتروني مطلوب";
                             },
                             controller: emailEditingController,
                             style: simpleTextStyle(color: Colors.blue),
                             decoration: textFieldInputDecoration(
-                              'Email',
+                              'البريد الإلكتروني',
                               Icon(Icons.email_outlined),
                             ),
                           ),
@@ -139,14 +139,14 @@ class _SignInState extends State<SignIn> {
                           TextFormField(
                             validator: (val) {
                               return (val?.length ?? 0) < 6
-                                  ? 'Minimum 6 characters required'
+                                  ? 'مطلوب على الاقل 6 خانات'
                                   : null;
                             },
                             controller: passwordEditingController,
                             style: simpleTextStyle(color: Colors.blue),
                             obscureText: true,
                             decoration: textFieldInputDecoration(
-                              'Password',
+                              'كلمة المرور',
                               Icon(Icons.vpn_key),
                             ),
                           ),
@@ -170,7 +170,7 @@ class _SignInState extends State<SignIn> {
                         alignment: Alignment.center,
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(vertical: 20.0),
-                        child: Text('Sign In', style: simpleTextStyle()),
+                        child: Text('الدخول', style: simpleTextStyle()),
                         decoration: BoxDecoration(
                           // Border
                           borderRadius: BorderRadius.circular(10.0),
@@ -196,7 +196,7 @@ class _SignInState extends State<SignIn> {
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(vertical: 20.0),
                         child: Text(
-                          'Sign In with Google',
+                          'الدخول بواسطة Google',
                           style:
                               TextStyle(color: Colors.black87, fontSize: 16.0),
                         ),
@@ -223,7 +223,7 @@ class _SignInState extends State<SignIn> {
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text(
-                              ' Register Now ',
+                              ' سجل الآن ',
                               style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.grey,
@@ -232,7 +232,7 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                         ),
-                        Text('? Don\'t have an account ',
+                        Text('ليس لديك حساب ؟',
                             style: simpleTextStyle(color: Colors.grey)),
                       ],
                     ),

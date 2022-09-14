@@ -1,7 +1,6 @@
 import 'package:chat_app/helper/helperFunctions.dart';
-import 'package:chat_app/views/chatRoomScreen.dart';
-import 'package:chat_app/views/core_screen.dart';
-import 'package:chat_app/views/home_screen.dart';
+import 'package:chat_app/views/core/core_screen.dart';
+import 'package:chat_app/views/core/home/home_screen.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +49,7 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           scaffoldBackgroundColor: Color(0xfff8f8f8),
           primaryColor: Color(0xff145C9E),
+          fontFamily: 'JF Flat Regular',
           primarySwatch: Colors.blue,
           accentColor: Color(0xff007EF4),
           visualDensity: VisualDensity.adaptivePlatformDensity,

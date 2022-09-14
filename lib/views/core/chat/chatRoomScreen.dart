@@ -2,8 +2,8 @@ import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/conversationScreen.dart';
-import 'package:chat_app/views/search.dart';
+import 'package:chat_app/views/core/chat/conversationScreen.dart';
+import 'package:chat_app/views/core/chat/search.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,7 +25,10 @@ class _ChatRoomState extends State<ChatRoom> {
       stream: chatRoomStream,
       builder: (context, snapshot) {
         return snapshot.hasData
-            ? ListView.builder(
+            ? ListView.separated(
+                separatorBuilder: (context, index) => SizedBox(
+                      height: 8,
+                    ),
                 itemCount: snapshot.data?.docs.length ?? 0,
                 shrinkWrap: true,
                 padding: EdgeInsets.only(
@@ -46,8 +49,8 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   getUserInfo() async {
-    Constants.myName =
-        (await HelperFunctions.getUserNameSharedPreference()) ?? 'UNKNOWN';
+    Constants.myName = (await HelperFunctions.getUserNameSharedPreference()) ??
+        'مستخدم غير معروف';
     databaseMethods.getChatRoom(Constants.myName).then((snapshots) {
       setState(() {
         chatRoomStream = snapshots;
@@ -69,7 +72,7 @@ class _ChatRoomState extends State<ChatRoom> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chat Room'),
+        title: Text('الدردشة'),
         actions: [
           // GestureDetector(
           //   onTap: () async {
@@ -141,7 +144,10 @@ class ChatRoomsTile extends StatelessWidget {
                 style: chatRoomTileStyle(Colors.black)
                     .copyWith(fontSize: 16.0, fontWeight: FontWeight.w600)),
             Spacer(),
-            Icon(Icons.arrow_forward_ios_rounded),
+            Icon(
+              Icons.send_rounded,
+              color: Colors.blue,
+            ),
           ],
         ),
       ),

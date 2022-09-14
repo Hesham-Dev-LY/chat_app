@@ -56,6 +56,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: JF Flat Regular
+      fonts:
+        - asset: fonts/jf_flat.ttf
   # To add assets to your application, add an assets section, like this:
   assets:
    - images/

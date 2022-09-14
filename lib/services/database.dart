@@ -56,8 +56,14 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getPosts(
+  Future<QuerySnapshot<Map<String, dynamic>>> getPosts(myPosts,
       {int limit = 100}) async {
+    if (myPosts) {
+      return FirebaseFirestore.instance
+          .collection("posts")
+          .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+    }
     return FirebaseFirestore.instance
         .collection("posts")
         .orderBy('date', descending: true)
