@@ -35,9 +35,9 @@ class _ViewPostsState extends State<ViewPosts> {
         List<PostModel> posts = snapshot.data!.docs
             .map((e) => PostModel.fromJson(e.data(), e.id))
             .toList();
-        if (!widget.myPosts)
-          posts.removeWhere((element) =>
-              element.userId! == FirebaseAuth.instance.currentUser!.uid);
+        // if (!widget.myPosts)
+        //   posts.removeWhere((element) =>
+        //       element.userId! == FirebaseAuth.instance.currentUser!.uid);
 
         if (posts.isEmpty) {
           return Center(
@@ -48,11 +48,13 @@ class _ViewPostsState extends State<ViewPosts> {
             itemCount: posts.length,
             padding: EdgeInsets.only(top: 8.0, bottom: 100),
             itemBuilder: (context, index) {
+              bool isOwner = (posts.elementAt(index).userId ?? "") ==
+                  FirebaseAuth.instance.currentUser!.uid;
               return Padding(
                 padding: const EdgeInsets.only(top: 16.0, left: 16, right: 16),
                 child: PostItem(
                     model: posts.elementAt(index),
-                    owner: widget.myPosts,
+                    owner: isOwner,
                     onPostDeleted: () {
                       setState(() {});
                     },

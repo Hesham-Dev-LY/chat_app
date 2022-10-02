@@ -126,24 +126,24 @@ class _AddPostScreenState extends State<AddPostScreen> {
       });
     }
   }
+}
 
-  Future<String?> uploadFile(XFile file) async {
-    try {
-      print('START:');
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('posts')
-          .child('/${file.name}.jpg');
+Future<String?> uploadFile(XFile file, {bool profileImg = false}) async {
+  try {
+    print('START:');
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child(profileImg ? 'profile' : 'posts')
+        .child('/${file.name}.jpg');
 
-      final metadata = SettableMetadata(
-        contentType: 'image/jpeg',
-        customMetadata: {'picked-file-path': file.path},
-      );
-      await ref.putFile(File(file.path), metadata);
-      return await ref.getDownloadURL();
-    } catch (ex) {
-      print('ERROR ______ : ${ex}');
-      return null;
-    }
+    final metadata = SettableMetadata(
+      contentType: 'image/jpeg',
+      customMetadata: {'picked-file-path': file.path},
+    );
+    await ref.putFile(File(file.path), metadata);
+    return await ref.getDownloadURL();
+  } catch (ex) {
+    print('ERROR ______ : ${ex}');
+    return null;
   }
 }

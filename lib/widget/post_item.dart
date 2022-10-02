@@ -127,35 +127,6 @@ class _PostItemState extends State<PostItem> {
               Container(
                 color: Colors.grey.shade200,
                 child: Builder(builder: (context) {
-                  if (widget.owner) {
-                    return Center(
-                      child: Container(
-                        height: 35.0,
-                        child: defaultButton(
-                            label: 'حذف',
-                            smalSize: true,
-                            radius: 5,
-                            backgroundColor: Colors.transparent,
-                            textColor: Colors.red,
-                            onClick: () async {
-                              try {
-                                showToast('جاري الحذف');
-                                await FirebaseFirestore.instance
-                                    .collection('posts')
-                                    .doc(widget.model.postId!)
-                                    .delete();
-                                if ((widget.onPostDeleted) != null) {
-                                  widget.onPostDeleted!();
-                                }
-                                showToast('تم الحذف');
-                              } catch (ex) {
-                                showToast('فشل الحذف');
-                              }
-                            },
-                            icon: Icons.delete_forever),
-                      ),
-                    );
-                  }
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -207,6 +178,40 @@ class _PostItemState extends State<PostItem> {
                                   : Icons.thumb_up_off_alt),
                         ),
                       ),
+                      if (widget.owner)
+                        Container(
+                          color: Colors.white,
+                          width: 1.0,
+                          height: 20,
+                        ),
+                      if (widget.owner)
+                        Center(
+                          child: Container(
+                            height: 35.0,
+                            child: defaultButton(
+                                label: 'حذف',
+                                smalSize: true,
+                                radius: 5,
+                                backgroundColor: Colors.transparent,
+                                textColor: Colors.red,
+                                onClick: () async {
+                                  try {
+                                    showToast('جاري الحذف');
+                                    await FirebaseFirestore.instance
+                                        .collection('posts')
+                                        .doc(widget.model.postId!)
+                                        .delete();
+                                    if ((widget.onPostDeleted) != null) {
+                                      widget.onPostDeleted!();
+                                    }
+                                    showToast('تم الحذف');
+                                  } catch (ex) {
+                                    showToast('فشل الحذف');
+                                  }
+                                },
+                                icon: Icons.delete_forever),
+                          ),
+                        ),
                     ],
                   );
                 }),
