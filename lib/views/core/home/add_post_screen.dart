@@ -116,7 +116,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
           await PostModel.newPost(description: des.text.trim(), image: imgUrl)
               .toMap());
       showToast('تم النشر', error: false);
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } catch (ex) {
       print(ex.toString());
       showToast('فشل النشر', error: true);

@@ -27,6 +27,7 @@ class _SignInState extends State<SignIn> {
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
   QuerySnapshot<Map<String, dynamic>>? snapshotUserInfo;
+
   signMeIn() async {
     if (formKey.currentState?.validate() ?? false) {
       setState(() {
@@ -67,15 +68,18 @@ class _SignInState extends State<SignIn> {
     });
 
     authMethods.signInWithGoogle().then((result) async {
-      print(authMethods.name);
-      print(authMethods.email);
-      print('DATA : ${authMethods}');
       if (result != null) {
-        Map<String, String> googleData = {
-          'googleUserName': authMethods.name,
-          'googleUserEmail': authMethods.email
+        Map<String, dynamic> googleData = {
+          'name': authMethods.name,
+          'email': authMethods.email,
+          'image': authMethods.imageUrl,
+          'fromGoogle': true,
+          'catetedAt': FieldValue.serverTimestamp(),
+          'authId': authMethods.auth.currentUser!.uid,
         };
-        await DatabaseMethods().uploadUserInfo(googleData);
+
+        await DatabaseMethods()
+            .uploadUserInfo(googleData, id: authMethods.auth.currentUser!.uid);
         // snapshotUserInfo =
         //     await DatabaseMethods().getUserByUserEmail(authMethods.email);
         // HelperFunctions.saveUserLoggedInSharedPreference(true);

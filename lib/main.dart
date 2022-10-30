@@ -2,6 +2,7 @@ import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/views/core/core_screen.dart';
 import 'package:chat_app/views/core/home/home_screen.dart';
 import 'package:chat_app/views/signin.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -33,11 +34,19 @@ class _MyAppState extends State<MyApp> {
 
   getLoggedInState() async {
     await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
-      setState(() {
-        userIsLoggedIn = value;
-      });
+      if (FirebaseAuth.instance.currentUser != null)
+        setState(() {
+          userIsLoggedIn = value;
+        });
+      else {
+        setState(() {
+          userIsLoggedIn = false;
+        });
+      }
     }).catchError((err) {
-      userIsLoggedIn = false;
+      setState(() {
+        userIsLoggedIn = false;
+      });
     });
   }
 

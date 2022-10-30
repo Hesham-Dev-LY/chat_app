@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
@@ -5,6 +7,7 @@ import 'package:chat_app/views/core/home/home_screen.dart';
 import 'package:chat_app/widget/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -44,11 +47,15 @@ class _SignUpState extends State<SignUp> {
           Map<String, dynamic> userDataMap = {
             "name": userNameEditingController.text,
             "email": emailEditingController.text,
+            'authId': FirebaseAuth.instance.currentUser!.uid,
+            'image': null,
+            'fromGoogle': false,
             'catetedAt': FieldValue.serverTimestamp(),
           };
           FirebaseAuth.instance.currentUser!
               .updateDisplayName(userNameEditingController.text);
-          databaseMethods.uploadUserInfo(userDataMap);
+          databaseMethods.uploadUserInfo(userDataMap,
+              id: authMethods.auth.currentUser!.uid);
           HelperFunctions.saveUserLoggedInSharedPreference(true);
           HelperFunctions.saveUserNameSharedPreference(
               userNameEditingController.text);
@@ -57,6 +64,11 @@ class _SignUpState extends State<SignUp> {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => CoreScreen()));
         }
+      }).catchError((e) {
+        log(e);
+        setState(() {
+          isLoading = true;
+        });
       });
     }
   }

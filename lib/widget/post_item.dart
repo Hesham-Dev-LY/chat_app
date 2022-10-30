@@ -26,6 +26,15 @@ class PostItem extends StatefulWidget {
 }
 
 class _PostItemState extends State<PostItem> {
+  String? imageUrl;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _getImage();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -45,6 +54,23 @@ class _PostItemState extends State<PostItem> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey.shade300,
+                      child: imageUrl == null
+                          ? Icon(Icons.person)
+                          : ClipRRect(
+                              clipBehavior: Clip.antiAlias,
+                              borderRadius: BorderRadius.circular(20),
+                              child: loadPhoto(
+                                  url: imageUrl!,
+                                  height: 250,
+                                  width: double.infinity),
+                            ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Expanded(
                         child: Text(
                       widget.model.userName ?? '',
@@ -221,5 +247,21 @@ class _PostItemState extends State<PostItem> {
         ),
       ),
     );
+  }
+
+  Future<void> _getImage() async {
+    try {
+      print('ENTER');
+      DocumentSnapshot<Map<String, dynamic>>? doc = await FirebaseFirestore
+          .instance
+          .collection('chatUsers')
+          .doc(widget.model.userId)
+          .get();
+      print(doc.data());
+      setState(() {
+        imageUrl = doc.get('image') ?? '';
+        print('WORK');
+      });
+    } catch (ex) {}
   }
 }

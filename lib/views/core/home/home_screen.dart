@@ -35,7 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddPostScreen(),
-                ));
+                )).then((value) {
+              if (value != null && value == true) {
+                setState(() {});
+              }
+            });
           },
           child: Icon(Icons.add)),
       body: ViewPosts(myPosts: false),

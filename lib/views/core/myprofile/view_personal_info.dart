@@ -4,6 +4,7 @@ import 'package:chat_app/helper/default_button.dart';
 import 'package:chat_app/helper/helperFunctions.dart';
 import 'package:chat_app/views/core/home/add_post_screen.dart';
 import 'package:chat_app/widget/text_input.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -79,6 +80,10 @@ class _ViewPersonalInfoScreenState extends State<ViewPersonalInfoScreen> {
                               } else {
                                 await FirebaseAuth.instance.currentUser!
                                     .updatePhotoURL(link);
+                                await FirebaseFirestore.instance
+                                    .collection('chatUsers')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .update({'image': link});
                                 setState(() {
                                   isLoading = false;
                                 });
@@ -141,6 +146,7 @@ class _ViewPersonalInfoScreenState extends State<ViewPersonalInfoScreen> {
               MyTextInput(
                 label: '',
                 onEditComplete: () {},
+                readOnly: true,
                 value: (FirebaseAuth.instance.currentUser!.displayName) ??
                     uname.text,
               ),
@@ -153,6 +159,7 @@ class _ViewPersonalInfoScreenState extends State<ViewPersonalInfoScreen> {
               ),
               MyTextInput(
                 label: '',
+                readOnly: true,
                 onEditComplete: () {},
                 value: FirebaseAuth.instance.currentUser!.email,
               ),

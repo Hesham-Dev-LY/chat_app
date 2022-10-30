@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 AppBar appBarMain(BuildContext context) {
   return AppBar(
     centerTitle: true,
-    title: Text('My Chat App'),
+    title: Text('تطبيق شاتي'),
   );
 }
 

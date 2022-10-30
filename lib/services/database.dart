@@ -20,10 +20,11 @@ class DatabaseMethods {
         .catchError((e) => print(e.toString()));
   }
 
-  uploadUserInfo(userMap) async {
+  uploadUserInfo(userMap, {required String id}) async {
     await FirebaseFirestore.instance
         .collection('chatUsers')
-        .add(userMap)
+        .doc(id)
+        .set(userMap)
         .catchError((e) => print(e.toString()));
   }
 
